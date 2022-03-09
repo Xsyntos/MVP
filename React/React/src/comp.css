@@ -1,0 +1,36 @@
+/** @format */
+
+.container {
+	display: flex;
+	padding: 10px;
+	flex-wrap: wrap;
+}
+
+.person {
+	border: solid 2px;
+	border-radius: 25px;
+	margin: 10px;
+	text-align: center;
+	flex-grow: 2;
+}
+
+.person img {
+	border: solid 5px;
+	border-radius: 25px;
+}
+
+.male {
+	color: steelblue;
+}
+
+.male img {
+	border-color: steelblue;
+}
+
+.female {
+	color: pink;
+}
+
+.female img {
+	border-color: pink;
+}
