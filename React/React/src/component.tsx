@@ -1,6 +1,8 @@
 /** @format */
 
+import { randomBytes } from "crypto";
 import * as React from "react";
+import internal from "stream";
 import "./comp.css";
 import logo from "./logo.svg";
 
@@ -81,12 +83,19 @@ export interface RootObject {
 	nat: string;
 }
 
-interface user {
+export interface user {
 	gender: string;
 	name: string;
 	surname: string;
 	email: string;
 	profilepicture: string;
+}
+
+export interface todo {
+	userId: number;
+	id: number;
+	title: string;
+	completed: boolean;
 }
 
 interface IProps {
@@ -95,15 +104,27 @@ interface IProps {
 
 interface IState {
 	Users: user[];
+	todos: todo[];
 }
 
-export let userFC: React.FunctionComponent<user> = (user: user) => {
+export let userFC: React.FunctionComponent<user> = (user: user, todos: todo[]) => {
 	let classes = `person ${user.gender}`;
+	let x: number = Math.floor(Math.random() * todos.length);
 	return (
 		<div className={classes}>
 			<img src={user.profilepicture} />
 			<h1>{user.name + " " + user.surname}</h1>
 			<p>{user.email}</p>
+			{todoFC(todos[x])}
+		</div>
+	);
+};
+
+export let todoFC: React.FunctionComponent<todo> = (todo: todo) => {
+	return (
+		<div>
+			<p>{todo.title}</p>
+			<p>{todo.completed}</p>
 		</div>
 	);
 };
@@ -114,6 +135,7 @@ export default class Comp extends React.Component<IProps, IState> {
 
 		this.state = {
 			Users: [],
+			todos: [],
 		};
 	}
 
@@ -136,8 +158,15 @@ export default class Comp extends React.Component<IProps, IState> {
 						profilepicture: e.picture.medium,
 					})
 				);
-
+				console.log(JSON.stringify(temp));
 				this.setState({ Users: temp });
+			})
+			.catch((error) => console.log(error + "🚫"));
+		fetch("https://jsonplaceholder.typicode.com/todos/")
+			.then((response) => response.json())
+			.then((data: todo[]) => {
+				console.log(JSON.stringify(data));
+				this.setState({ ...this.state, todos: data });
 			})
 			.catch((error) => console.log(error + "🚫"));
 	}
@@ -151,7 +180,7 @@ export default class Comp extends React.Component<IProps, IState> {
 				<br></br>
 
 				{this.state.Users.map((e) => {
-					return userFC(e);
+					return userFC(e, this.state.todos);
 				})}
 			</div>
 		);
